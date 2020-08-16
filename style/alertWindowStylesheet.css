@@ -1,0 +1,39 @@
+QWidget{
+    background-color: #202020;
+}
+
+QPushButton{
+    color: white;
+    background-color: #444444;
+    font-weight: bold;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 5px;
+}
+
+QPushButton:hover{
+    color: #cfab0a;
+    background-color: #000000;
+}
+
+QPushButton#closeBtn{
+    color: thistle;
+    background-color: #2a4264;
+    padding-top: 0px;
+    font-size: 17px;
+    font-weight: 100;
+    border: 1px solid #2a4264;
+    border-radius: 0px;
+    border-bottom-left-radius: 2px;
+}
+QPushButton#closeBtn:hover{
+    background-color: red;
+    color: white;
+    border: 1px solid red;
+}
+
+QLabel#alert{
+    font-weight: 800;
+    color: white;
+    font-size: 15px;
+}

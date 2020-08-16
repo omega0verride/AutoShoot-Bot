@@ -1,0 +1,13 @@
+QMenu{
+    background-color:#121212;
+    font-size: 14px;
+  }
+  
+QMenu::item{
+   color: rgb(255, 255, 255);
+}
+  
+QMenu::item:selected{
+   background-color: #0066da;
+   color: rgb(255, 255, 255);
+} 
