@@ -2,49 +2,62 @@ QWidget{
     background-color: #202020;
 }
 
+/*-------------------------------------------------------------------------*/
+
 QPushButton{
-    color: #888888;
-    background-color: #444444;
-    font-weight: bold;
-    border: none;
+    color: thistle;
+    background-color: #1a58af;
+    border: 1px solid #1a58af;
     padding: 5px;
 }
+
 QPushButton:active{
     color: #ffffff;
 }
+
 QPushButton:hover{
-    color: #1d90cd;
+    color: white;
 }
 
-QPushButton#closeBtn{
-    color: thistle;
-    background-color: #2a4264;
+QPushButton#closeBtn, #minimiseBtn{
     padding-top: 0px;
     font-size: 17px;
     font-weight: 100;
-    border: 1px solid #2a4264;
     border-bottom-right-radius: 2px;
 }
+
 QPushButton#closeBtn:hover{
     background-color: red;
-    color: white;
     border: 1px solid red;
 }
 
-QPushButton#minimiseBtn{
-    color: thistle;
-    background-color: #2a4264;
-    padding-top: 0px;
-    font-size: 17px;
-    font-weight: 100;
-    border: 1px solid #2a4264;
-    border-bottom-left-radius: 2px;
-}
 QPushButton#minimiseBtn:hover{
     background-color: rgb(0, 132, 255);
-    color: white;
     border: 1px solid rgb(0, 132, 255);
 }
+
+QPushButton#infoBtn{
+    margin-top: 6px;
+    width: 9px;
+    height: 10px;
+    padding-top: 3px;
+    font-size: 15px;
+    font-weight: 100;
+    border-radius: 10px;
+}
+QPushButton#infoBtn:hover{
+    background-color: rgb(0, 132, 255);
+    border: 1px solid rgb(0, 132, 255);
+}
+
+QPushButton#recordOnOffshortcutButton, #recordShootshortcutButton{
+    border: 1px solid grey;
+    background-color: rgb(24, 39, 49);
+    border-radius: 2px;
+    font-weight: bold;
+}
+
+/*-------------------------------------------------------------------------*/
 
 QLabel#windowTitle{
     padding-top: 5px;
@@ -53,7 +66,7 @@ QLabel#windowTitle{
     font-size: 15px;
 }
 
-QLabel#currentOnOffShortcutLabel{
+QLabel#currentShortcutLabel, #currentShortcutKeyLabel{
     padding-top: 2px;
     padding-right: 10px;
     padding-left: 10px;
@@ -65,31 +78,11 @@ QLabel#currentOnOffShortcutLabel{
     border-radius: 3px;
 }
 
-
-QLabel#currentOnOffShortcutLabel1{
-    padding-top: 2px;
-    padding-right: 10px;
-    padding-left: 10px;
-    font-weight: 800;
-    font-size: 13px;
-    color: white;
-    background-color: black;
-    border: 1px solid grey;
-    border-radius: 3px;
+QPushButton#onoffSlideButton{
+    padding-bottom: 50px;
 }
 
-QPushButton#recordOnOffshortcutButton{
-    border: 1px solid grey;
-    background-color: rgb(24, 39, 49);
-    border-radius: 2px;
-}
-
-QPushButton#recordShootshortcutButton{
-    border: 1px solid grey;
-    background-color: rgb(24, 39, 49);
-    border-radius: 2px;
-}
-
+/*-------------------------------------------------------------------------*/
 
 QLabel#onoffLabel{
     margin-left: -5px;
@@ -105,9 +98,13 @@ QLabel#onoffLabel{
     border-radius: 3px;
 }
 
-QPushButton#onoffSlideButton{
-    padding-bottom: 50px;
+QLabel#messageBoxLabel{
+    font-weight: 800;
+    font-size: 14px;
+    color: red;
 }
+
+/*-------------------------------------------------------------------------*/
 
 QCheckBox#checkboxes{
     color: whitesmoke;
@@ -129,8 +126,12 @@ QCheckBox#checkboxes::indicator:hover{
     border: 1px solid rgb(255, 255, 255);
 }
 
-QToolTip { 
+/*-------------------------------------------------------------------------*/
+
+QToolTip{ 
     color: #ffffff;
     background-color: #000000;
     border: 0px; 
 }
+
+/*-------------------------------------------------------------------------*/

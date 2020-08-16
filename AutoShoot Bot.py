@@ -14,10 +14,13 @@ from threading import Thread
 from pynput import keyboard
 from pynput.keyboard import Key, KeyCode, Controller
 import keyboard as keyboardSimulator
+import webbrowser
 
 from modules import bot_overlay
 from modules.keycodes import keycodes
 from modules.qSlideCheckButton import OnOffslideButton
+from modules.appAlreadyRunning import alertWindow
+
 
 class MainWindow(QtWidgets.QWidget):
 
@@ -50,18 +53,34 @@ class MainWindow(QtWidgets.QWidget):
         self.btn_close.setFixedSize(25, 20)
         self.btn_close.setObjectName("closeBtn")
         self.btn_close.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.btn_closeLay = QVBoxLayout()
+        self.btn_closeLay.addWidget(self.btn_close)
+        self.btn_closeLay.addStretch(1)
 
         self.btn_minimise = QPushButton("-")
         self.btn_minimise.clicked.connect(self.btn_minimise_clicked)
         self.btn_minimise.setFixedSize(25, 20)
         self.btn_minimise.setObjectName("minimiseBtn")
         self.btn_minimise.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.btn_minimiseLay = QVBoxLayout()
+        self.btn_minimiseLay.addWidget(self.btn_minimise)
+        self.btn_minimiseLay.addStretch(1)
 
-        self.titleLayout.addWidget(self.btn_close)
+        self.infoBtn = QPushButton('?')
+        self.infoBtn.setObjectName('infoBtn')
+        self.infoBtn.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.infoBtn.clicked.connect(self.openInfoWebpage)
+        self.infoBtnLay = QVBoxLayout()
+        self.infoBtnLay.addWidget(self.infoBtn)
+
+        self.titleLayout.addLayout(self.btn_closeLay)
         self.titleLayout.addStretch(1)
         self.titleLayout.addWidget(self.title)
+        self.titleLayout.addSpacing(-43)
+        self.titleLayout.addLayout(self.infoBtnLay)
+        self.titleLayout.addSpacing(43)
         self.titleLayout.addStretch(1)
-        self.titleLayout.addWidget(self.btn_minimise)
+        self.titleLayout.addLayout(self.btn_minimiseLay)
 
         # --------------------------------------------------------------------------------------------------------------
         global onoffLabel
@@ -71,18 +90,18 @@ class MainWindow(QtWidgets.QWidget):
         onoffLabel.setAlignment(QtCore.Qt.AlignCenter)
 
         self.currentOnOffShortcutLabel = QLabel("On/Off Keyboard Shortcut")
-        self.currentOnOffShortcutLabel.setObjectName("currentOnOffShortcutLabel")
+        self.currentOnOffShortcutLabel.setObjectName("currentShortcutLabel")
         self.currentOnOffShortcutLabel.setFixedWidth(200)
-        # self.currentOnOffShortcutLabel.setToolTip("Note: The shortcut does not support combinations!")
-        # implementmessagebox
+        self.currentOnOffShortcutLabel.setToolTip("Note: The shortcut does not support combinations!")
+        self.currentOnOffShortcutLabel.setToolTipDuration(4000)
 
-        global currentOnOffShortcutLabel1
+        global currentOnOffShortcutKeyLabel
         with open(os.path.join(working_directory, 'shortcutRegisters', 'OnOff_Shortcut_Key.txt'), 'r') as file:
             on_off_shortcut_key_name = file.readlines()[1]
-        currentOnOffShortcutLabel1 = QLabel(on_off_shortcut_key_name)
-        currentOnOffShortcutLabel1.setObjectName("currentOnOffShortcutLabel1")
-        currentOnOffShortcutLabel1.setAlignment(QtCore.Qt.AlignCenter)
-        currentOnOffShortcutLabel1.setFixedWidth(140)
+        currentOnOffShortcutKeyLabel = QLabel(on_off_shortcut_key_name)
+        currentOnOffShortcutKeyLabel.setObjectName("currentShortcutKeyLabel")
+        currentOnOffShortcutKeyLabel.setAlignment(QtCore.Qt.AlignCenter)
+        currentOnOffShortcutKeyLabel.setFixedWidth(140)
 
         global recordOnOffShortcut
         recordOnOffShortcut = QPushButton("Record New")
@@ -99,7 +118,7 @@ class MainWindow(QtWidgets.QWidget):
         self.onoffLay.addWidget(onoffLabel)
         self.onoffLay.addSpacing(5)
         self.onoffLay.addWidget(self.currentOnOffShortcutLabel)
-        self.onoffLay.addWidget(currentOnOffShortcutLabel1)
+        self.onoffLay.addWidget(currentOnOffShortcutKeyLabel)
         self.onoffLay.addStretch(1)
         self.onoffLay.addWidget(recordOnOffShortcut)
         self.onoffLay.addSpacing(30)
@@ -111,17 +130,17 @@ class MainWindow(QtWidgets.QWidget):
         onoffButton.setObjectName("onoffSlideButton")
 
         self.currentShootShortcutLabel = QLabel("Game Shoot Keybind")
-        self.currentShootShortcutLabel.setObjectName("currentOnOffShortcutLabel")
+        self.currentShootShortcutLabel.setObjectName("currentShortcutLabel")
         self.currentShootShortcutLabel.setFixedWidth(200)
         self.currentShootShortcutLabel.setAlignment(QtCore.Qt.AlignCenter)
 
-        global currentShootShortcutLabel1
+        global currentShootShortcutKeyLabel
         with open(os.path.join(working_directory, 'shortcutRegisters', 'Game_Shoot_Shortcut_Key.txt'), 'r') as file:
             shoot_shortcut_key_name = file.readlines()[1]
-        currentShootShortcutLabel1 = QLabel(shoot_shortcut_key_name)
-        currentShootShortcutLabel1.setObjectName("currentOnOffShortcutLabel1")
-        currentShootShortcutLabel1.setAlignment(QtCore.Qt.AlignCenter)
-        currentShootShortcutLabel1.setFixedWidth(140)
+        currentShootShortcutKeyLabel = QLabel(shoot_shortcut_key_name)
+        currentShootShortcutKeyLabel.setObjectName("currentShortcutKeyLabel")
+        currentShootShortcutKeyLabel.setAlignment(QtCore.Qt.AlignCenter)
+        currentShootShortcutKeyLabel.setFixedWidth(140)
 
         global recordShootShortcut
         recordShootShortcut = QPushButton("Record New")
@@ -138,12 +157,18 @@ class MainWindow(QtWidgets.QWidget):
         self.keybindLay.addWidget(onoffButton)
         self.keybindLay.addSpacing(50)
         self.keybindLay.addWidget(self.currentShootShortcutLabel)
-        self.keybindLay.addWidget(currentShootShortcutLabel1)
+        self.keybindLay.addWidget(currentShootShortcutKeyLabel)
         self.keybindLay.addStretch(1)
         self.keybindLay.addWidget(recordShootShortcut)
         self.keybindLay.addSpacing(30)
         # --------------------------------------------------------------------------------------------------------------
-
+        global messageBox
+        messageBox = QLabel()
+        messageBox.setObjectName('messageBoxLabel')
+        self.messageBoxLay = QHBoxLayout()
+        self.messageBoxLay.addSpacing(20)
+        self.messageBoxLay.addWidget(messageBox)
+        # --------------------------------------------------------------------------------------------------------------
         self.startOnStartupCheckBox = QCheckBox("Start On Boot")
         self.startOnStartupCheckBox.clicked.connect(self.setStartOnStartup)
         self.startOnStartupCheckBox.setObjectName("checkboxes")
@@ -183,7 +208,6 @@ class MainWindow(QtWidgets.QWidget):
         self.checkBoxLay.addWidget(self.gamesOnlyCheckBox)
         self.checkBoxLay.addStretch(1)
         self.checkBoxLay.addSpacing(10)
-
         # --------------------------------------------------------------------------------------------------------------
 
         self.layout.addLayout(self.titleLayout)
@@ -191,6 +215,8 @@ class MainWindow(QtWidgets.QWidget):
         self.layout.addLayout(self.onoffLay)
         self.layout.addSpacing(5)
         self.layout.addLayout(self.keybindLay)
+        self.layout.addSpacing(20)
+        self.layout.addLayout(self.messageBoxLay)
         self.layout.addStretch(1)
         self.layout.addLayout(self.checkBoxLay)
         self.layout.addSpacing(10)
@@ -346,6 +372,9 @@ class MainWindow(QtWidgets.QWidget):
         self.activateWindow()
         self.center()
 
+    def openInfoWebpage(self):
+        webbrowser.open('https://github.com/omega0verride/AutoShoot-Bot')
+
     def btn_minimise_clicked(self):
         self.hide()
 
@@ -357,60 +386,6 @@ class MainWindow(QtWidgets.QWidget):
         cp = QtWidgets.QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
-
-    def mousePressEvent(self, event):
-        self.oldPos = event.globalPos()
-
-    def mouseMoveEvent(self, event):
-        delta = QtCore.QPoint(event.globalPos() - self.oldPos)
-        self.move(self.x() + delta.x(), self.y() + delta.y())
-        self.oldPos = event.globalPos()
-
-class alertWindow(QtWidgets.QWidget):
-    def __init__(self, *args, **kwargs):
-        super(alertWindow, self).__init__(*args, **kwargs)
-        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
-        self.setFixedSize(250, 100)
-        self.setWindowTitle(appname)
-        self.appIcon = QtGui.QIcon(os.path.join(working_directory, 'icon.ico'))
-        self.setWindowIcon(self.appIcon)
-
-        self.layout = QVBoxLayout()
-        self.layout.setContentsMargins(0, 0, 0, 0)
-
-
-        self.btn_close = QPushButton("x")
-        self.btn_close.clicked.connect(self.close_window)
-        self.btn_close.setFixedSize(25, 20)
-        self.btn_close.setObjectName("closeBtn")
-        self.btn_close.setFocusPolicy(QtCore.Qt.NoFocus)
-
-        self.closeBtnLayout = QHBoxLayout()
-        self.closeBtnLayout.addStretch(1)
-        self.closeBtnLayout.addWidget(self.btn_close)
-
-        self.alertMessage = QLabel("App Already Running!")
-        self.alertMessage.setAlignment(QtCore.Qt.AlignCenter)
-        self.alertMessage.setObjectName("alert")
-
-        self.okBtn = QPushButton("OK")
-        self.okBtn.clicked.connect(self.close)
-        self.okBtn.setFixedWidth(50)
-        self.okBtnLay = QHBoxLayout()
-        self.okBtnLay.addStretch(1)
-        self.okBtnLay.addWidget(self.okBtn)
-        self.okBtnLay.addStretch(1)
-
-        self.layout.addLayout(self.closeBtnLayout)
-        self.layout.addWidget(self.alertMessage)
-        self.layout.addSpacing(8)
-        self.layout.addLayout(self.okBtnLay)
-        self.layout.addStretch(1)
-
-        self.setLayout(self.layout)
-
-    def close_window(self):
-        self.close()
 
     def mousePressEvent(self, event):
         self.oldPos = event.globalPos()
@@ -435,7 +410,7 @@ class KeyboardListenerClass:
         recordOnOffShortcut.setStyleSheet(
             'QPushButton#recordOnOffshortcutButton{color: white; border: 1px solid grey;}QPushButton#recordOnOffshortcutButton:hover{border: 1px solid khaki;color: grey;}')
         recordOnOffShortcut.setText("Record New")
-        currentOnOffShortcutLabel1.setText(str(key_name))
+        currentOnOffShortcutKeyLabel.setText(str(key_name))
         recordShootShortcut.setEnabled(1)
         onoffButton.setEnabled(1)
         global bot_active
@@ -452,7 +427,7 @@ class KeyboardListenerClass:
         recordShootShortcut.setStyleSheet(
             'QPushButton#recordShootshortcutButton{color: white; border: 1px solid grey;}QPushButton#recordShootshortcutButton:hover{border: 1px solid khaki;color: grey;}')
         recordShootShortcut.setText("Record New")
-        currentShootShortcutLabel1.setText(str(key_name))
+        currentShootShortcutKeyLabel.setText(str(key_name))
         recordOnOffShortcut.setEnabled(1)
         onoffButton.setEnabled(1)
         global bot_active
@@ -473,43 +448,50 @@ class KeyboardListenerClass:
                 if '_l' == key[-2:] or '_r' == key[-2:]:
                     key = key.replace('_l', '').replace('_r', '')
             elif '<' in key:
-                key = 'code_' + key.replace('<', '').replace('>','')
+                key = 'code_' + key.replace('<', '').replace('>', '')
                 key = keycodes[key]
                 key_name = key
             else:
                 key = key.replace('\'', '')
         except:
             key = ''
-            print("Key Not Supported")
-        # print(key)
-        if len(key):
-            if Shortcut_Function == "OnOff_Shortcut_Key":
+            log("Key \"%s\" Not Supported!" % key)
+
+        if Shortcut_Function == "OnOff_Shortcut_Key":
+            if len(key):
                 if key is not on_off_shortcut_key:
                     if key != shoot_shortcut_key:
                         self.set_on_off_shortcut_key(key, key_name)
+                        updateMessageBox('')
                     else:
-                        # implementmessagebox
-                        pass
-            elif Shortcut_Function == "Game_Shoot_Shortcut_Key":
+                        updateMessageBox("On/Off Shortcut can't be the same as Shoot Shortcut!")
+            else:
+                updateMessageBox("Key Not Supported!")
+
+        elif Shortcut_Function == "Game_Shoot_Shortcut_Key":
+            if len(key):
                 if key is not shoot_shortcut_key:
                     if key != on_off_shortcut_key:
                         self.set_game_shoot_shortcut_key(key, key_name)
+                        updateMessageBox('')
                     else:
-                        # implementmessagebox
-                        pass
-            elif on_off_shortcut_key == key:
-                global bot_active
-                onoffButton.click()
-                if not onoffButton.isChecked():
-                    onoffLabel.setText("ON")
-                    # print("Bot: Active")
-                    self.queue.put([1, overlayStatus])
-                    bot_active = 1
-                else:
-                    onoffLabel.setText("OFF")
-                    # print("Bot: Disabled")
-                    self.queue.put([0, overlayStatus])
-                    bot_active = 0
+                        updateMessageBox("Shoot Shortcut can't be the same as On/Off Shortcut!")
+            else:
+                updateMessageBox("Key Not Supported!")
+
+        elif key == on_off_shortcut_key:
+            global bot_active
+            onoffButton.click()
+            if not onoffButton.isChecked():
+                onoffLabel.setText("ON")
+                # print("Bot: Active")
+                self.queue.put([1, overlayStatus])
+                bot_active = 1
+            else:
+                onoffLabel.setText("OFF")
+                # print("Bot: Disabled")
+                self.queue.put([0, overlayStatus])
+                bot_active = 0
 
     def run(self, q):
         self.queue = q
@@ -520,20 +502,23 @@ class KeyboardListenerClass:
 class ClickBot:
     def check_for_mouseclick(self):
         state_left = win32api.GetKeyState(0x01)  # Left button down = 0 or 1. Button up = -127 or -128
-        # print(state_left)
+        print(state_left)
         if state_left == -128 or state_left == -127:
-            print(shoot_shortcut_key_for_Simulator)
+            # print(shoot_shortcut_key_for_Simulator)
             try:
                 keyboardSimulator.press(shoot_shortcut_key_for_Simulator)
-                time.sleep(0.001)
+                time.sleep(key_click_delay)
                 keyboardSimulator.release(shoot_shortcut_key_for_Simulator)
-                time.sleep(0.001)
+                time.sleep(key_click_delay)
             except:
+                updateMessageBox("Key Not Supported!")
                 print("Key Not Supported")
 
     def bot_loop(self):
+        self.config = EasySettings('config.conf')
+        self.key_click_delay = self.config.get("key_click_delay")
         while 1:
-            time.sleep(0.001) #added small delay to give time to processor
+            time.sleep(0.001)  # added small delay to give time to processor
             if bot_active:
                 if work_on_games_with_hidden_mouse_only:
                     if win32gui.GetCursorInfo()[0] == win32gui.GetCursorInfo()[1] == 0:
@@ -541,6 +526,7 @@ class ClickBot:
                         self.check_for_mouseclick()
                 else:
                     self.check_for_mouseclick()
+
 
 def alert_already_running():
     app = QtWidgets.QApplication(sys.argv)
@@ -550,6 +536,7 @@ def alert_already_running():
     window = alertWindow()
     window.show()
     app.exec_()
+
 
 def create_GUI(q):
     app = QtWidgets.QApplication(sys.argv)
@@ -561,21 +548,30 @@ def create_GUI(q):
     app.exec_()
 
 
+def updateMessageBox(text):
+    global messageBox
+    messageBox.setText(text)
+
+
 def log(log):
     with open('log.txt', 'a+') as logfile:
         logfile.write(str(log) + '\n')
+
+
 def setup_log():
     with open('log.txt', 'w+') as logfile:
-        logfile.write(str('Start Logging --> %s' %time.strftime('%H:%M:%S, %d/%m/%Y')) + '\n')
+        logfile.write(str('Start Logging --> %s' % time.strftime('%H:%M:%S, %d/%m/%Y')) + '\n')
+
 
 if __name__ == '__main__':
     setup_log()
     appname = "AutoShoot Bot"
     working_directory = os.path.dirname(os.path.realpath(__file__))
     processes = list(p.name() for p in psutil.process_iter())
-    log('\n----------------------Running Processes----------------------\n' + str(processes) + '\n----------------------Running Processes----------------------')
-    log('Number of %s App Running: '%appname + str(processes.count(appname + '.exe')))
-    if processes.count(appname + '.exe') < 2:
+    log('\n----------------------Running Processes----------------------\n' + str(
+        processes) + '\n----------------------Running Processes----------------------')
+    log('Number of %s App Running: ' % appname + str(processes.count(appname + '.exe')))
+    if processes.count(appname + '.exe') < 2:  # Check if exe already running
         Shortcut_Function = ''
         bot_active = 0
         work_on_games_with_hidden_mouse_only = 1
@@ -586,7 +582,6 @@ if __name__ == '__main__':
             shoot_shortcut_key_for_Simulator = content[0].replace('\n', '')
 
         q = Queue()
-        keyboardSimulator = Controller()
         keyboard_listener = KeyboardListenerClass()
         bot = ClickBot()
 
@@ -603,5 +598,5 @@ if __name__ == '__main__':
         bot_overlay_process.start()
         bot_process.start()
     else:
-        log('............App Already Running............')
+        log('............ App Already Running ............')
         alert_already_running()
