@@ -14,112 +14,10 @@ from threading import Thread
 from pynput import keyboard
 from pynput.keyboard import Key, KeyCode, Controller
 import keyboard as keyboardSimulator
-import mouse
+
 from modules import bot_overlay
-keycodes = {
-"code_40": "down",
-"code_37": "left",
-"code_39": "right",
-"code_38": "up",
-"code_112": "F1",
-"code_113": "F2",
-"code_114": "F3",
-"code_115": "F4",
-"code_116": "F5",
-"code_117": "F6",
-"code_118": "F7",
-"code_119": "F8",
-"code_120": "F9",
-"code_121": "F10",
-"code_122": "F11",
-"code_123": "F12",
-"code_27": "esc",
-"code_34": "Page_Down",
-"code_33": "Page_Up",
-"code_19": "Pause",
-"code_44": "Print_Screen",
-"code_145": "Scroll_Lock",
-"code_16": "Shift",
-"code_32": "Spacebar",
-"code_9": "Tab",
-"code_8": "Backspace",
-"code_13": "Enter",
-"code_20":"Caps_Lock",
-"code_18": "Alt",
-"code_17": "Ctrl",
-"code_46": "Delete",
-"code_36": "Home",
-"code_35": "End",
-"code_45": "Insert",
-"code_144": "Num_Lock",
-"code_109": '-',
-"code_106": '*',
-"code_110": '.',
-"code_111": '/',
-"code_107": '+',
-"code_96": "num_0",
-"code_97": "num_1",
-"code_98": "num_2",
-"code_99": "num_3",
-"code_100": "num_4",
-"code_101": "num_5",
-"code_12": "num_5",
-"code_102": "num_6",
-"code_103": "num_7",
-"code_104": "num_8",
-"code_105": "num_9",
-}
-
-class OnOffslideButton(QCheckBox):
-    def __init__(self, parent, value):
-        super(QCheckBox, self).__init__(parent)
-        self.setEnabled(True)
-        self._enable = 0
-        self.setChecked(not value)
-
-    def mousePressEvent(self, *args, **kwargs):
-
-        if self.isChecked():
-            self.setChecked(False)
-            self.parent().turnBotOn()
-        else:
-            self.setChecked(True)
-            self.parent().turnBotOff()
-        return QCheckBox.mousePressEvent(self, *args, **kwargs)
-
-    def paintEvent(self, event):
-
-        self.setMinimumHeight(10)
-        self.setMinimumWidth(20)
-        self.setMaximumHeight(30)
-        self.setMaximumWidth(70)
-
-        self.resize(self.parent().width(), self.parent().height())
-        painter = QtGui.QPainter()
-        painter.begin(self)
-        painter.setRenderHint(QtGui.QPainter.Antialiasing)
-
-        if self.isChecked():
-            brush = QtGui.QBrush(QtGui.QColor(50, 50, 50))
-            painter.setBrush(brush)
-
-            painter.drawRoundedRect(0, 0, self.width() - 2, self.height() - 2,
-                                    self.height() / 2, self.height() / 2)
-
-            brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
-            painter.setBrush(brush)
-            painter.drawEllipse(0, 0, self.height(), self.height())
-
-        else:
-            brush = QtGui.QBrush(QtGui.QColor(66, 149, 244))
-            painter.setBrush(brush)
-
-            painter.drawRoundedRect(0, 0, self.width() - 2, self.height() - 2,
-                                    self.height() / 2, self.height() / 2)
-
-            brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
-            painter.setBrush(brush)
-            painter.drawEllipse(self.width() - self.height(), 0, self.height(), self.height())
+from modules.keycodes import keycodes
+from modules.qSlideCheckButton import OnOffslideButton
 
 class MainWindow(QtWidgets.QWidget):
 
@@ -584,7 +482,6 @@ class KeyboardListenerClass:
             key = ''
             print("Key Not Supported")
         # print(key)
-        print(len(key))
         if len(key):
             if Shortcut_Function == "OnOff_Shortcut_Key":
                 if key is not on_off_shortcut_key:
@@ -636,7 +533,7 @@ class ClickBot:
 
     def bot_loop(self):
         while 1:
-            time.sleep(0.001)
+            time.sleep(0.001) #added small delay to give time to processor
             if bot_active:
                 if work_on_games_with_hidden_mouse_only:
                     if win32gui.GetCursorInfo()[0] == win32gui.GetCursorInfo()[1] == 0:
