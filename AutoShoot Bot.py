@@ -501,22 +501,22 @@ class KeyboardListenerClass:
 
 class ClickBot:
     def check_for_mouseclick(self):
+        self.config = EasySettings('config.conf')
+        self.key_click_delay = self.config.get("key_click_delay")
         state_left = win32api.GetKeyState(0x01)  # Left button down = 0 or 1. Button up = -127 or -128
-        print(state_left)
+        # print(state_left)
         if state_left == -128 or state_left == -127:
             # print(shoot_shortcut_key_for_Simulator)
             try:
                 keyboardSimulator.press(shoot_shortcut_key_for_Simulator)
-                time.sleep(key_click_delay)
+                time.sleep(self.key_click_delay)
                 keyboardSimulator.release(shoot_shortcut_key_for_Simulator)
-                time.sleep(key_click_delay)
-            except:
+                time.sleep(self.key_click_delay)
+            except Exception as e:
                 updateMessageBox("Key Not Supported!")
-                print("Key Not Supported")
+                log("Key Not Supported " + " ERROR --------->" + str(e))
 
     def bot_loop(self):
-        self.config = EasySettings('config.conf')
-        self.key_click_delay = self.config.get("key_click_delay")
         while 1:
             time.sleep(0.001)  # added small delay to give time to processor
             if bot_active:

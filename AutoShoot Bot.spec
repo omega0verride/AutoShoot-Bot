@@ -1,10 +1,10 @@
-# -*- mode: python -*-
+# -*- mode: python ; coding: utf-8 -*-
 
 block_cipher = None
 
 
 a = Analysis(['AutoShoot Bot.py'],
-             pathex=['D:\\shoot_bot'],
+             pathex=['C:\\Users\\indri\\Desktop\\AutoShoot Bot\\AutoShoot-Bot'],
              binaries=[],
              datas=[],
              hiddenimports=[],
@@ -33,4 +33,5 @@ coll = COLLECT(exe,
                a.datas,
                strip=False,
                upx=True,
+               upx_exclude=[],
                name='AutoShoot Bot')
