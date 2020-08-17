@@ -503,8 +503,13 @@ class ClickBot:
     def check_for_mouseclick(self):
         self.config = EasySettings('config.conf')
         self.key_click_delay = self.config.get("key_click_delay")
+        self.single_click_delay = self.config.get("single_click_delay")
         state_left = win32api.GetKeyState(0x01)  # Left button down = 0 or 1. Button up = -127 or -128
         # print(state_left)
+        if state_left != self.old_state_left:
+            self.old_state_left = state_left
+            time.sleep(self.single_click_delay)  # delay to avoid double click on single click
+            state_left = -1  # empty value to avoid unintentional click
         if state_left == -128 or state_left == -127:
             # print(shoot_shortcut_key_for_Simulator)
             try:
@@ -517,6 +522,7 @@ class ClickBot:
                 log("Key Not Supported " + " ERROR --------->" + str(e))
 
     def bot_loop(self):
+        self.old_state_left = win32api.GetKeyState(0x01)  # Left button down = 0 or 1. Button up = -127 or -128
         while 1:
             time.sleep(0.001)  # added small delay to give time to processor
             if bot_active:

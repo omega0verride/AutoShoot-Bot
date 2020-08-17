@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['AutoShoot Bot.py'],
-             pathex=['C:\\Users\\indri\\Desktop\\AutoShoot Bot\\AutoShoot-Bot'],
+             pathex=['C:\\Users\\indri\\Desktop\\AutoShoot Bot'],
              binaries=[],
              datas=[],
              hiddenimports=[],
