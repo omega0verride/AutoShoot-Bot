@@ -6,9 +6,10 @@ You don't have to quickly press and release the mouse to shoot with a pistol. Yo
 
 The bot can be activated/deactivated using a keybind of your choice.  
 ![](/readmeImages/onoffShortcut.PNG)  
+  
 You must set a Shoot keybind on your game same as that on app.  
-  **Carefull! Numpad numbers and normal numbers are not the same.**  
 ![](/readmeImages/shootShortcut.PNG)
+ **Carefull! Numpad numbers and normal numbers are not the same.**  
 
 ## Demo
 
