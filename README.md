@@ -8,7 +8,7 @@ The bot can be activated/deactivated using a keybind of your choice.
 ![](/readmeImages/onoffShortcut.PNG)  
   
 You must set a Shoot keybind on your game same as that on app.  
-![](/readmeImages/shootShortcut.PNG)  
+![](/readmeImages/shootShortcut.PNG) ![](/readmeImages/shootKeybind.PNG) 
  **\*Carefull! Numpad numbers and normal numbers are not the same.**  
 
 ## Demo
