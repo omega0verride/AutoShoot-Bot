@@ -5,7 +5,7 @@ Makes Pistols and DMRs shoot faster, almost like a full auto weapon.
 You don't have to quickly press and release the mouse to shoot with a pistol. You just hold it down.
 
 The bot can be activated/deactivated using a keybind of your choice.
-![](/readmeImages/onoffShortcut.png)
+![](/readmeImages/onoffShortcut.PNG)
 
 ## Demo
 
