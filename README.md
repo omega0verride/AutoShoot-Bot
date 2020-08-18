@@ -1,5 +1,5 @@
 # AutoShoot-Bot
-![App](readmeImages/main.png)
+![App](AutoShoot-Bot/readmeImages/main.png)
 ## Use
 Makes Pistols and DMRs shoot faster, almost like a full auto weapon.  
 You don't have to quickly press and release the mouse to shoot with a pistol. You just hold it down.
