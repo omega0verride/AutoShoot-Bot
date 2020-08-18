@@ -10,7 +10,7 @@ The bot can be activated/deactivated using a keybind of your choice.
 You must set a Shoot keybind on your game same as that on app.  
 ![](/readmeImages/shootShortcut.PNG) ![](/readmeImages/shootKeybind.PNG)  
  **\*Carefull! Numpad numbers and normal numbers are not the same.**  
-  **\*On some games, like Fortnite you will need to remove Mouse Left key as a keybind and leave only the keybind that the bot uses, but this means you cannot shoot if the bot is off.**  
+  **\*On some games**, like Fortnite you will need to remove Mouse Left key as a keybind and leave only the keybind that the bot uses, but this means you **cannot shoot** if the bot is off.  
 
 ## Demo
 
