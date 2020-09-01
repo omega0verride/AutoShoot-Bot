@@ -13,6 +13,7 @@ You must set a Shoot keybind on your game same as that on app.
  **\*Carefull! Numpad numbers and normal numbers are not the same.**  
   **\*On some games**, like Fortnite you will need to remove Mouse Left key as a keybind and leave only the keybind that the bot uses, but this means you **cannot shoot** if the bot is off.  
 
+*In **Rainbow6Siege** set **Gadgets Deployment** to **Advanced** to avoid troubles with gadgets deployment.
 ## Demo
 
 ## How it works
