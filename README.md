@@ -1,5 +1,5 @@
 # AutoShoot-Bot
-This is an *autoshooter* **not** an *autoclicker.*
+This is an *autoshooter* **not** an *autoclicker.*  
 ![App](/readmeImages/main.PNG)
 
 ## Use
