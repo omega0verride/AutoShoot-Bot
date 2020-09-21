@@ -29,7 +29,7 @@ class alertWindow(QtWidgets.QWidget):
         self.alertMessage.setObjectName("alert")
 
         self.okBtn = QPushButton("OK")
-        self.okBtn.clicked.connect(self.close)
+        self.okBtn.clicked.connect(self.close_window)
         self.okBtn.setFixedWidth(50)
         self.okBtnLay = QHBoxLayout()
         self.okBtnLay.addStretch(1)

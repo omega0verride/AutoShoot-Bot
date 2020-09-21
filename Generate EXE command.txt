@@ -1,0 +1,1 @@
+Start-Process "powershell" -argument "pyinstaller --noconsole -i .\icon.ico '.\AutoShoot Bot.py'" -wait; cp -R style, systemTray, shortcutRegisters, icon.ico, config.conf "dist/AutoShoot Bot"
