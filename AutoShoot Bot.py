@@ -234,7 +234,7 @@ class MainWindow(QtWidgets.QWidget):
             showAction.setIcon(
                 QtGui.QIcon(os.path.join(working_directory, 'systemTray', 'tray_menu_show_app_icon.png')))
         except Exception as e:
-            log("Error: " + e)
+            print("Error: " + e)
 
         exitAction = menu.addAction("Exit")
         exitAction.triggered.connect(self.close_window)
@@ -242,7 +242,7 @@ class MainWindow(QtWidgets.QWidget):
             exitAction.setIcon(
                 QtGui.QIcon(os.path.join(working_directory, 'systemTray', 'tray_menu_exit_app_icon.png')))
         except Exception as e:
-            log("Error:" + e)
+            print("Error:" + e)
 
         self.tray = QSystemTrayIcon()
         self.tray_icon = QtGui.QIcon(os.path.join(working_directory, 'systemTray', 'tray_icon.png'))
@@ -265,14 +265,14 @@ class MainWindow(QtWidgets.QWidget):
 
     def turnBotOn(self):
         onoffLabel.setText("ON")
-        log("Set Bot: Active")
+        print("Set Bot: Active")
         self.queue.put([1, overlayStatus])
         global bot_active
         bot_active = 1
 
     def turnBotOff(self):
         onoffLabel.setText("OFF")
-        log("Set Bot: Disabled")
+        print("Set Bot: Disabled")
         self.queue.put([0, overlayStatus])
         global bot_active
         bot_active = 0
@@ -315,7 +315,7 @@ class MainWindow(QtWidgets.QWidget):
         self.target_exe = (os.path.abspath(sys.argv[0]))
         self.working_directory = (os.path.abspath(sys.argv[0])).split("\\" + self.exe_name)[0]
 
-        log("Add to startup" + str(self.exe_name) + str(self.target_exe) + str(self.working_directory))
+        print("Add to startup" + str(self.exe_name) + str(self.target_exe) + str(self.working_directory))
 
         try:
             windowsStartupFolder = winshell.startup()
@@ -325,18 +325,18 @@ class MainWindow(QtWidgets.QWidget):
             shortcut.WorkingDirectory = r'%s' % self.working_directory
             shortcut.save()
         except Exception as error:
-            log("Error adding shortcut to startup folder. --> " + str(error))
+            print("Error adding shortcut to startup folder. --> " + str(error))
 
     def removeFromStartup(self):
         windowsStartupFolder = winshell.startup()
         try:
             if os.path.exists(windowsStartupFolder + '\%s.lnk' % self.shortcutName):
                 os.remove(windowsStartupFolder + '\%s.lnk' % self.shortcutName)
-                log("--------------> Successfully removed from startup")
+                print("--------------> Successfully removed from startup")
             else:
                 pass
         except Exception as error:
-            log("Error removing shortcut from startup folder. --> " + str(error))
+            print("Error removing shortcut from startup folder. --> " + str(error))
 
     def disableBotWhileRecording(self):
         global bot_active
@@ -348,9 +348,11 @@ class MainWindow(QtWidgets.QWidget):
         recordOnOffShortcut.setText("Recording")
         recordOnOffShortcut.setStyleSheet(
             "QPushButton#recordOnOffshortcutButton{color: red; border: 1px solid grey;}QPushButton#recordOnOffshortcutButton:hover{border: 1px solid khaki;color: grey;}")
-        log('--------------> Recording OnOff Shortcut...')
+        print('--------------> Recording OnOff Shortcut...')
         global Shortcut_Function
         Shortcut_Function = 'OnOff_Shortcut_Key'
+        global onoff_recording_step
+        onoff_recording_step = 0
 
     def set_Shoot_shortcut_key(self):
         recordOnOffShortcut.setDisabled(1)
@@ -358,7 +360,7 @@ class MainWindow(QtWidgets.QWidget):
         recordShootShortcut.setText("Recording")
         recordShootShortcut.setStyleSheet(
             "QPushButton#recordShootshortcutButton{color: red; border: 1px solid grey;}QPushButton#recordShootshortcutButton:hover{border: 1px solid khaki;color: grey;}")
-        log('--------------> Recording Shoot Shortcut...')
+        print('--------------> Recording Shoot Shortcut...')
         global Shortcut_Function
         Shortcut_Function = 'Game_Shoot_Shortcut_Key'
 
@@ -398,23 +400,56 @@ class MainWindow(QtWidgets.QWidget):
 
 class KeyboardListenerClass:
 
-    def on_press(self, key):
-        pass
+    def decodeKey(self, key):
+        try:
+            key_name = key
+            if 'Key.' in key:
+                key = key.replace('Key.', '')
+                if '_l' == key[-2:] or '_r' == key[-2:]:
+                    key = key.replace('_l', '').replace('_r', '')
+            elif '<' in key:
+                key = 'code_' + key.replace('<', '').replace('>', '')
+                key = keycodes[key]
+                key_name = key
+            elif '\\x' in key:
+                key = 'code_' + key.replace('\\', '').replace('\'', '')
+                key = keycodes[key]
+                key_name = key
+            else:
+                key = key.replace('\'', '')
+            return key, key_name
+        except:
+            key = ''
+            print("Key \"%s\" Not Supported!" % key)
+            return key, key_name
 
-    def set_on_off_shortcut_key(self, key, key_name):
+    def exitRecorder(self, key):
         global Shortcut_Function
-        with open(os.path.join(working_directory, 'shortcutRegisters', Shortcut_Function) + '.txt', 'w+') as file:
-            file.write(key + '\n' + key_name)
         Shortcut_Function = ''
-        log('Set %s as new OnnOff shortcut key.' % key)
         recordOnOffShortcut.setStyleSheet(
             'QPushButton#recordOnOffshortcutButton{color: white; border: 1px solid grey;}QPushButton#recordOnOffshortcutButton:hover{border: 1px solid khaki;color: grey;}')
         recordOnOffShortcut.setText("Record New")
-        currentOnOffShortcutKeyLabel.setText(str(key_name))
         recordShootShortcut.setEnabled(1)
         onoffButton.setEnabled(1)
         global bot_active
         bot_active = 1
+        keyboardSimulator.release('shift')
+        keyboardSimulator.release(str(key))
+        print("Exiting recorder...")
+
+
+    def set_on_off_modified_shortcut_key(self, key):
+        with open(os.path.join(working_directory, 'shortcutRegisters', Shortcut_Function) + '_Modified.txt',
+                  'w+') as file:
+            file.write(key)
+        print('Set %s as modified OnnOff shortcut key.' % key)
+
+
+    def set_on_off_shortcut_key(self, key, key_name):
+        with open(os.path.join(working_directory, 'shortcutRegisters', Shortcut_Function) + '.txt', 'w+') as file:
+            file.write(key + '\n' + key_name)
+        currentOnOffShortcutKeyLabel.setText(str(key_name))
+        print('Set %s as new OnnOff shortcut key.' % key)
 
     def set_game_shoot_shortcut_key(self, key, key_name):
         global Shortcut_Function
@@ -423,7 +458,7 @@ class KeyboardListenerClass:
         global shoot_shortcut_key_for_Simulator
         shoot_shortcut_key_for_Simulator = key
         Shortcut_Function = ''
-        log('--------------> Set %s as new Shoot shortcut key.' % key)
+        print('--------------> Set %s as new Shoot shortcut key.' % key)
         recordShootShortcut.setStyleSheet(
             'QPushButton#recordShootshortcutButton{color: white; border: 1px solid grey;}QPushButton#recordShootshortcutButton:hover{border: 1px solid khaki;color: grey;}')
         recordShootShortcut.setText("Record New")
@@ -433,35 +468,54 @@ class KeyboardListenerClass:
         global bot_active
         bot_active = 1
 
-    def on_release(self, key):
+    def on_press(self, key):
         with open(os.path.join(working_directory, 'shortcutRegisters', 'OnOff_Shortcut_Key.txt'), 'r') as file:
             content = file.readlines()
             on_off_shortcut_key = content[0].replace('\n', '')
         with open(os.path.join(working_directory, 'shortcutRegisters', 'Game_Shoot_Shortcut_Key.txt'), 'r') as file:
             content = file.readlines()
             shoot_shortcut_key = content[0].replace('\n', '')
-        key = str(key)
-        key_name = key
-        try:
-            if 'Key.' in key:
-                key = key.replace('Key.', '')
-                if '_l' == key[-2:] or '_r' == key[-2:]:
-                    key = key.replace('_l', '').replace('_r', '')
-            elif '<' in key:
-                key = 'code_' + key.replace('<', '').replace('>', '')
-                key = keycodes[key]
-                key_name = key
+        if Shortcut_Function == "OnOff_Shortcut_Key":
+            key = str(key)
+            keys = self.decodeKey(key)
+            key, key_name = keys[0], keys[1]
+            print("Pressed ---> ", key)
+            if len(key):
+                if key is not on_off_shortcut_key:
+                    if key != shoot_shortcut_key:
+                        global onoff_recording_step
+                        if onoff_recording_step == 0:
+                            self.baseKey = key
+                            self.set_on_off_shortcut_key(key, key_name)
+                            onoff_recording_step = 1
+                            keyboardSimulator.press('shift + %s' % str(key))
+                    else:
+                        updateMessageBox("Shoot Shortcut can't be the same as On/Off Shortcut!")
             else:
-                key = key.replace('\'', '')
-        except:
-            key = ''
-            log("Key \"%s\" Not Supported!" % key)
+                updateMessageBox("Key Not Supported!")
 
+    def on_release(self, key):
+        with open(os.path.join(working_directory, 'shortcutRegisters', 'OnOff_Shortcut_Key.txt'), 'r') as file:
+            content = file.readlines()
+            on_off_shortcut_key = content[0].replace('\n', '')
+        with open(os.path.join(working_directory, 'shortcutRegisters', 'OnOff_Shortcut_Key_Modified.txt'), 'r') as file:
+            content = file.readlines()
+            on_off_shortcut_key_modified = content[0].replace('\n', '')
+        with open(os.path.join(working_directory, 'shortcutRegisters', 'Game_Shoot_Shortcut_Key.txt'), 'r') as file:
+            content = file.readlines()
+            shoot_shortcut_key = content[0].replace('\n', '')
+        key = str(key)
+        # print(key)
+        keys = self.decodeKey(key)
+        key, key_name = keys[0], keys[1]
+
+        # print("Pressed: ", key)
         if Shortcut_Function == "OnOff_Shortcut_Key":
             if len(key):
                 if key is not on_off_shortcut_key:
                     if key != shoot_shortcut_key:
-                        self.set_on_off_shortcut_key(key, key_name)
+                        self.set_on_off_modified_shortcut_key(key)
+                        self.exitRecorder(self.baseKey)
                         updateMessageBox('')
                     else:
                         updateMessageBox("On/Off Shortcut can't be the same as Shoot Shortcut!")
@@ -479,7 +533,7 @@ class KeyboardListenerClass:
             else:
                 updateMessageBox("Key Not Supported!")
 
-        elif key == on_off_shortcut_key:
+        elif key == on_off_shortcut_key or key == on_off_shortcut_key_modified:
             global bot_active
             onoffButton.click()
             if not onoffButton.isChecked():
@@ -505,7 +559,7 @@ class ClickBot:
         self.key_click_delay = self.config.get("key_click_delay")
         self.single_click_delay = self.config.get("single_click_delay")
         state_left = win32api.GetKeyState(0x01)  # Left button down = 0 or 1. Button up = -127 or -128
-        # print(state_left)
+        print(state_left)
         if state_left != self.old_state_left:
             self.old_state_left = state_left
             time.sleep(self.single_click_delay)  # delay to avoid double click on single click
@@ -519,19 +573,25 @@ class ClickBot:
                 time.sleep(self.key_click_delay)
             except Exception as e:
                 updateMessageBox("Key Not Supported!")
-                log("Key Not Supported " + " ERROR --------->" + str(e))
+                print("Key Not Supported " + " ERROR --------->" + str(e))
 
     def bot_loop(self):
-        self.old_state_left = win32api.GetKeyState(0x01)  # Left button down = 0 or 1. Button up = -127 or -128
+        try:
+            self.old_state_left = win32api.GetKeyState(0x01)  # Left button down = 0 or 1. Button up = -127 or -128
+        except Exception as e:
+            print("---------------------------\nError: %s\n---------------------------\n" % str(e))
         while 1:
-            time.sleep(0.001)  # added small delay to give time to processor
-            if bot_active:
-                if work_on_games_with_hidden_mouse_only:
-                    if win32gui.GetCursorInfo()[0] == win32gui.GetCursorInfo()[1] == 0:
-                        # print("Game Active")
+            try:
+                time.sleep(0.001)  # added small delay to give time to processor
+                if bot_active:
+                    if work_on_games_with_hidden_mouse_only:
+                        if win32gui.GetCursorInfo()[0] == win32gui.GetCursorInfo()[1] == 0:
+                            # print("Game Active")
+                            self.check_for_mouseclick()
+                    else:
                         self.check_for_mouseclick()
-                else:
-                    self.check_for_mouseclick()
+            except Exception as e:
+                print("---------------------------\nError: %s\n---------------------------\n" % str(e))
 
 
 def alert_already_running():
@@ -559,24 +619,22 @@ def updateMessageBox(text):
     messageBox.setText(text)
 
 
-def log(log):
-    with open('log.txt', 'a+') as logfile:
-        logfile.write(str(log) + '\n')
-
-
-def setup_log():
-    with open('log.txt', 'w+') as logfile:
-        logfile.write(str('Start Logging --> %s' % time.strftime('%H:%M:%S, %d/%m/%Y')) + '\n')
-
-
 if __name__ == '__main__':
-    setup_log()
     appname = "AutoShoot Bot"
-    working_directory = os.path.dirname(os.path.realpath(__file__))
-    processes = list(p.name() for p in psutil.process_iter())
-    log('\n----------------------Running Processes----------------------\n' + str(
-        processes) + '\n----------------------Running Processes----------------------')
-    log('Number of %s App Running: ' % appname + str(processes.count(appname + '.exe')))
+    if getattr(sys, 'frozen', False):
+        # running in executable mode
+        working_directory = sys._MEIPASS
+        sys.stdout = open('log.txt', 'w+')
+        processes = list(p.name() for p in psutil.process_iter())
+        print('\n----------------------Running Processes----------------------\n' + str(
+            processes) + '\n----------------------Running Processes----------------------')
+        print('Number of %s App Running: ' % appname + str(processes.count(appname + '.exe')))
+    else:
+        # running in a normal Python environment
+        processes = [0]
+        working_directory = os.path.dirname(os.path.abspath(__file__))
+
+
     if processes.count(appname + '.exe') < 2:  # Check if exe already running
         Shortcut_Function = ''
         bot_active = 0
@@ -604,5 +662,5 @@ if __name__ == '__main__':
         bot_overlay_process.start()
         bot_process.start()
     else:
-        log('............ App Already Running ............')
+        print('............ App Already Running ............')
         alert_already_running()
