@@ -29,6 +29,16 @@ In **Rainbow6Siege** set **Gadgets Deployment** to **Advanced** to avoid trouble
 ## Downsides
 In some games, like Rainbow 6 Siege you cannot place gadgets while the bot is active since you have to hold down the mouse.  
 
+## Setup
+On Windows with Python 3.9 or newer, install the pinned dependencies and run the app:
+
+```powershell
+py -m pip install -r requirements.txt
+py "AutoShoot Bot.py"
+```
+
+The requirements file includes PyInstaller for building the executable.
+
 ## Script
 You can change single_click_delay and key_click_delay from config.conf file for a better performance.  
 You can use "Generate EXE command.txt" to generate executable files with pyinstaller without having to copy files manually.
