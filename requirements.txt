@@ -1,0 +1,11 @@
+# Runtime dependencies
+psutil==7.2.2
+winshell==0.6
+pywin32==312
+easysettings==4.0.1
+PyQt5==5.15.11
+pynput==1.8.2
+keyboard==0.13.5
+
+# Build dependency
+PyInstaller==6.22.3
